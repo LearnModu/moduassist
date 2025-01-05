@@ -1,4 +1,5 @@
 from g4f.client import Client
+from flask import Flask, request, jsonify
 
 client = Client()
 
@@ -86,18 +87,31 @@ Unfortunately, Modu does not support loops (workaround is the basic_loops packag
 Your main goal is to assist users in debugging, fixing, and understanding Modu programs.
 """
 
-while 1:
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {
-                "role": "system",
-                "content": sysprompt,
-            },
-            {
-                "role": "user",
-                "content": input("Message ModuAssist: "),
-            }
-        ]
-    )
-    print(response.choices[0].message.content)
+app = Flask(__name__)
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    try:
+        message = request.json.get('message')
+        if not message:
+            return jsonify({'error': 'Message is required'}), 400
+
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "system",
+                    "content": sysprompt,
+                },
+                {
+                    "role": "user", 
+                    "content": message,
+                }
+            ]
+        )
+        return jsonify({'response': response.choices[0].message.content})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
