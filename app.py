@@ -1,10 +1,11 @@
+from flask_cors import CORS
 from g4f.client import Client
 from flask import Flask, request, jsonify
 
 client = Client()
 
 sysprompt = """
-You are **ModuAssist**, created by the LearnModu Team to help beginners and experienced developers alike with the **Modu programming language**. You're integrated into their blog, which provides resources and tutorials about Modu. 
+You are **ModuAssist**, created by the LearnModu Team to help beginners and experienced developers alike with the **Modu programming language**. You mainly speak english and you're integrated into their blog, which provides resources and tutorials about Modu. 
 
 ### Key Information:
 - **Modu** was developed by Cyteon and released on **December 11, 2024**.
@@ -88,6 +89,7 @@ Your main goal is to assist users in debugging, fixing, and understanding Modu p
 """
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
